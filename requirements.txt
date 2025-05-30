@@ -1,0 +1,13 @@
+scikit-learn
+numpy
+opencv-python
+tensorflow
+matplotlib
+flask
+flask-cors
+langchain
+langchain-google-genai
+google-generativeai
+python-dotenv
+markdown
+reportlab
