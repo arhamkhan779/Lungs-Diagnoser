@@ -7,6 +7,7 @@ from PIL import Image
 def load_model(model_path=r"models\model.keras"):
     return keras.models.load_model(model_path)
 
+print(f"Loading Segmentation Model")
 model = load_model()
 
 def preprocess_image(image_path, target_size=(256, 256)):
