@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>X-ray Analysis</title>
+</head>
+<body>
+    <h2>Upload X-ray Image</h2>
+    <form method="POST" action="{{ url_for('segment_classify_post') }}" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ user_id }}">
+        <label>Select X-ray Image:</label><br>
+        <input type="file" name="file" accept="image/*" required><br>
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>

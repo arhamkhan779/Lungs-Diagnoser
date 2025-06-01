@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Prescriptions</title>
+</head>
+<body>
+    <h2>Upload Prescription Images</h2>
+    <form method="POST" action="{{ url_for('upload_prescriptions_post') }}" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ user_id }}">
+        <label>Select Prescription Images:</label><br>
+        <input type="file" name="files" accept="image/*" multiple required><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

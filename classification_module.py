@@ -11,13 +11,23 @@ def Load_Model(model_path):
 print(f"Loading Classification Model")
 model = Load_Model(model_path)
 
-def classify_disease(Image_path):
+def classify_disease(image):
         Super_Class=['Normal','Abnormal']
         Subclasses=['Viral Pneumonia','Bacterial Pneumonia','Corona Virus','Tuberclosis']
-        image=cv2.imread(Image_path)
-        img=cv2.resize(image,(64,64))
-        img=img/255
-        img=img.reshape(1,64,64,3)
+        
+        # image = cv2.imread(Image_path, cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            raise ValueError(f"Image not found: {image}")
+
+        # Resize to model input size
+        img = cv2.resize(image, (128, 128))
+
+        # Normalize
+        img = img.astype(np.float32) / 255.0
+
+        # Add batch and channel dimension
+        img = img.reshape(1, 128, 128, 1)
+
         y_pred_binary, y_pred_subclass = model.predict(img)
 
         y_pred_binary = (y_pred_binary > 0.5).astype(int).flatten()

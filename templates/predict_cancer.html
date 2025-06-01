@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cancer Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px auto;
+            max-width: 600px;
+            background-color: #f7f7f7;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+        }
+        button {
+            margin-top: 25px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cancer Prediction Form</h2>
+    <form method="POST" action="{{ url_for('cancer_prediction') }}">
+        <input type="hidden" name="id" value="{{ user_id }}">
+
+        <label for="GENDER">Gender:</label>
+        <input type="text" name="GENDER" required>
+
+        <label for="AGE">Age:</label>
+        <input type="number" name="AGE" required>
+
+        <label for="SMOKING">Smoking (0 or 1):</label>
+        <input type="number" name="SMOKING" min="0" max="1" required>
+
+        <label for="YELLOW_FINGERS">Yellow Fingers (0 or 1):</label>
+        <input type="number" name="YELLOW_FINGERS" min="0" max="1" required>
+
+        <label for="ANXIETY">Anxiety (0 or 1):</label>
+        <input type="number" name="ANXIETY" min="0" max="1" required>
+
+        <label for="PEER_PRESSURE">Peer Pressure (0 or 1):</label>
+        <input type="number" name="PEER_PRESSURE" min="0" max="1" required>
+
+        <label for="CHRONIC_DISEASE">Chronic Disease (0 or 1):</label>
+        <input type="number" name="CHRONIC_DISEASE" min="0" max="1" required>
+
+        <label for="FATIGUE">Fatigue (0 or 1):</label>
+        <input type="number" name="FATIGUE" min="0" max="1" required>
+
+        <label for="ALLERGY">Allergy (0 or 1):</label>
+        <input type="number" name="ALLERGY" min="0" max="1" required>
+
+        <label for="WHEEZING">Wheezing (0 or 1):</label>
+        <input type="number" name="WHEEZING" min="0" max="1" required>
+
+        <label for="ALCOHOL_CONSUMING">Alcohol Consuming (0 or 1):</label>
+        <input type="number" name="ALCOHOL_CONSUMING" min="0" max="1" required>
+
+        <label for="COUGHING">Coughing (0 or 1):</label>
+        <input type="number" name="COUGHING" min="0" max="1" required>
+
+        <label for="SHORTNESS_OF_BREATH">Shortness of Breath (0 or 1):</label>
+        <input type="number" name="SHORTNESS_OF_BREATH" min="0" max="1" required>
+
+        <label for="SWALLOWING_DIFFICULTY">Swallowing Difficulty (0 or 1):</label>
+        <input type="number" name="SWALLOWING_DIFFICULTY" min="0" max="1" required>
+
+        <label for="CHEST_PAIN">Chest Pain (0 or 1):</label>
+        <input type="number" name="CHEST_PAIN" min="0" max="1" required>
+
+        <button type="submit">Submit Prediction</button>
+    </form>
+</body>
+</html>
