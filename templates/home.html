@@ -1,18 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>User Registration</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multi Model Lung Diagnoser AI Agent - Register</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      animation: fadeInScale 0.8s ease forwards;
+    }
+
+    @keyframes fadeInScale {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #2c3e50;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #2c3e50;
+      text-align: center;
+    }
+
+    .error-message {
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #34495e;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1.8px solid #ccc;
+      font-size: 14px;
+      transition: border-color 0.3s ease;
+      background-color: #fff;
+      color: #2c3e50;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+
+    button {
+      padding: 14px 30px;
+      background-color: #2980b9;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #1c5980;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2>Register</h2>
-    <form method="POST" action="{{ url_for('register') }}">
-        <label>Name:</label><br>
-        <input type="text" name="name" required><br>
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br>
-        <label>ID:</label><br>
-        <input type="text" name="id" required><br>
-        <button type="submit">Next</button>
+  <div class="container" role="main">
+    <h1>Multi Model Lung Diagnoser AI Agent</h1>
+    <h2>Patient Information</h2>
+
+    <!-- Error message display -->
+    {% if error %}
+      <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('register') }}" aria-label="User Registration Form">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required autocomplete="name" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required autocomplete="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="id">ID:</label>
+        <input type="text" id="id" name="id" required autocomplete="off"
+               pattern="[A-Za-z0-9]+" title="User ID must be alphanumeric" />
+      </div>
+
+      <button type="submit">Next</button>
     </form>
+  </div>
 </body>
 </html>

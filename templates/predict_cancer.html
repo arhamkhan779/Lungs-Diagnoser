@@ -3,100 +3,209 @@
 <head>
     <title>Cancer Prediction</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px auto;
-            max-width: 600px;
-            background-color: #f7f7f7;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+       body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
         }
         h2 {
             text-align: center;
-            color: #333;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 700;
         }
         form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px 20px;
+            justify-content: space-between;
+        }
+        .form-group {
+            flex: 1 1 30%;
             display: flex;
             flex-direction: column;
         }
         label {
-            margin-top: 15px;
-            font-weight: bold;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #34495e;
         }
-        input[type="text"],
-        input[type="number"] {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        input[type="number"],
+        select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1.8px solid #ccc;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background-color: #fff;
+            color: #2c3e50;
+        }
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        input[type="number"]#age {
+            min-width: 90px;
+        }
+        .buttons {
             width: 100%;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
         button {
-            margin-top: 25px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 14px 30px;
             font-size: 16px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+            transition: background-color 0.3s ease;
         }
-        button:hover {
-            background-color: #45a049;
+        #predict-btn {
+            background-color: #2980b9;
+            color: white;
+        }
+        #predict-btn:hover {
+            background-color: #1c5980;
+        }
+        #next-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        #next-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #prediction-result {
+            margin-top: 30px;
+            background: #fff;
+            padding: 22px 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            white-space: pre-wrap;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            min-height: 40px;
+        }
+        @media(max-width: 650px) {
+            .form-group {
+                flex: 1 1 100%;
+            }
+            .buttons {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <h2>Cancer Prediction Form</h2>
-    <form method="POST" action="{{ url_for('cancer_prediction') }}">
+    <h2>Patient Symptoms</h2>
+    <form id="cancer-form" method="POST" action="{{ url_for('cancer_prediction') }}">
         <input type="hidden" name="id" value="{{ user_id }}">
 
-        <label for="GENDER">Gender:</label>
-        <input type="text" name="GENDER" required>
+        <!-- Form fields -->
+        <div class="form-group">
+            <label for="GENDER">Gender:</label>
+            <select name="GENDER" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
+        </div>
 
-        <label for="AGE">Age:</label>
-        <input type="number" name="AGE" required>
+        <div class="form-group">
+            <label for="AGE">Age:</label>
+            <input type="number" id="age" name="AGE" min="0" required placeholder="Enter age">
+        </div>
 
-        <label for="SMOKING">Smoking (0 or 1):</label>
-        <input type="number" name="SMOKING" min="0" max="1" required>
+        {% set fields = [
+            'SMOKING', 'YELLOW_FINGERS', 'ANXIETY', 'PEER_PRESSURE', 'CHRONIC_DISEASE',
+            'FATIGUE', 'ALLERGY', 'WHEEZING', 'ALCOHOL_CONSUMING',
+            'COUGHING', 'SHORTNESS_OF_BREATH', 'SWALLOWING_DIFFICULTY', 'CHEST_PAIN'
+        ] %}
+        {% for field in fields %}
+        <div class="form-group">
+            <label for="{{ field }}">{{ field.replace('_', ' ').title() }}:</label>
+            <select name="{{ field }}" required>
+                <option value="" disabled selected>Select</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        {% endfor %}
 
-        <label for="YELLOW_FINGERS">Yellow Fingers (0 or 1):</label>
-        <input type="number" name="YELLOW_FINGERS" min="0" max="1" required>
-
-        <label for="ANXIETY">Anxiety (0 or 1):</label>
-        <input type="number" name="ANXIETY" min="0" max="1" required>
-
-        <label for="PEER_PRESSURE">Peer Pressure (0 or 1):</label>
-        <input type="number" name="PEER_PRESSURE" min="0" max="1" required>
-
-        <label for="CHRONIC_DISEASE">Chronic Disease (0 or 1):</label>
-        <input type="number" name="CHRONIC_DISEASE" min="0" max="1" required>
-
-        <label for="FATIGUE">Fatigue (0 or 1):</label>
-        <input type="number" name="FATIGUE" min="0" max="1" required>
-
-        <label for="ALLERGY">Allergy (0 or 1):</label>
-        <input type="number" name="ALLERGY" min="0" max="1" required>
-
-        <label for="WHEEZING">Wheezing (0 or 1):</label>
-        <input type="number" name="WHEEZING" min="0" max="1" required>
-
-        <label for="ALCOHOL_CONSUMING">Alcohol Consuming (0 or 1):</label>
-        <input type="number" name="ALCOHOL_CONSUMING" min="0" max="1" required>
-
-        <label for="COUGHING">Coughing (0 or 1):</label>
-        <input type="number" name="COUGHING" min="0" max="1" required>
-
-        <label for="SHORTNESS_OF_BREATH">Shortness of Breath (0 or 1):</label>
-        <input type="number" name="SHORTNESS_OF_BREATH" min="0" max="1" required>
-
-        <label for="SWALLOWING_DIFFICULTY">Swallowing Difficulty (0 or 1):</label>
-        <input type="number" name="SWALLOWING_DIFFICULTY" min="0" max="1" required>
-
-        <label for="CHEST_PAIN">Chest Pain (0 or 1):</label>
-        <input type="number" name="CHEST_PAIN" min="0" max="1" required>
-
-        <button type="submit">Submit Prediction</button>
+        <div class="buttons">
+            <button type="button" id="predict-btn">Predict</button>
+            <button type="button" id="next-btn" disabled>Next</button>
+        </div>
     </form>
+
+    <div id="prediction-result"></div>
+
+    <script>
+        document.getElementById('age').addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+        });
+
+        document.getElementById('predict-btn').addEventListener('click', function() {
+            const form = document.getElementById('cancer-form');
+            const selects = form.querySelectorAll('select');
+            for (let sel of selects) {
+                if (!sel.value) {
+                    alert('Please select ' + sel.previousElementSibling.textContent.replace(':',''));
+                    sel.focus();
+                    return;
+                }
+            }
+            if (!form['AGE'].value || form['AGE'].value < 0) {
+                alert('Please enter a valid age (0 or above).');
+                form['AGE'].focus();
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not OK');
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('prediction-result').textContent = data.prediction;
+                document.getElementById('next-btn').disabled = false;  // Enable "Next"
+            })
+            .catch(error => {
+                document.getElementById('prediction-result').textContent = "Error: " + error.message;
+            });
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function() {
+            const userId = "{{ user_id }}";
+            window.location.href = "{{ url_for('segment_classify') }}" + "?user_id=" + encodeURIComponent(userId);
+        });
+    </script>
 </body>
 </html>

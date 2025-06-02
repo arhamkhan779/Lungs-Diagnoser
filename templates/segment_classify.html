@@ -1,15 +1,368 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>X-ray Analysis</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>X-ray Analysis</title>
+  <style>
+    /* === Body and global styles === */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* === Container with card style === */
+    .container {
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 900px; /* Increased width */
+      animation: fadeInScale 0.8s ease forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    /* === Animations === */
+    @keyframes fadeInScale {
+      0% {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* === Heading styles === */
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0;
+      color: #2c3e50;
+      font-weight: 700;
+      text-align: center;
+      animation: slideInDown 0.8s ease forwards;
+    }
+
+    /* === Drag and Drop Box === */
+    .dropbox {
+      width: 100%;
+      height: 150px;
+      border: 3px dashed #2980b9;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2980b9;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      text-align: center;
+      padding: 10px;
+    }
+
+    .dropbox.hover {
+      background-color: #d6f0ff;
+      border-color: #1c5980;
+      color: #1c5980;
+    }
+
+    /* === Form styles === */
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #34495e;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    /* Hide the original file input */
+    input[type="file"] {
+      display: none;
+    }
+
+    /* === Buttons container === */
+    .buttons {
+      display: flex;
+      gap: 15px;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    /* === Button styles (vibrant colors) === */
+    button {
+      flex: 1;
+      padding: 14px 30px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.6);
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    button#analyze-btn {
+      background-color: #007bff;
+      box-shadow: 0 6px 15px rgba(0, 123, 255, 0.6);
+    }
+
+    button#analyze-btn:hover:not(:disabled) {
+      background-color: #0056b3;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 86, 179, 0.8);
+    }
+
+    button#next-btn {
+      background-color: #17a2b8;
+      box-shadow: 0 6px 15px rgba(23, 162, 184, 0.6);
+    }
+
+    button#next-btn:hover:not(:disabled) {
+      background-color: #117a8b;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(17, 122, 139, 0.8);
+    }
+
+    /* === Images container === */
+    #images-container {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: nowrap; /* changed from wrap to nowrap */
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      width: 100%;
+      overflow-x: auto; /* allow horizontal scroll if needed */
+    }
+
+    #images-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #images-container img {
+      width: 130px;
+      height: 130px;
+      object-fit: contain;
+      border: 3px solid #2980b9;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
+      transition: transform 0.3s ease;
+      flex-shrink: 0; /* prevent shrinking */
+    }
+
+    #images-container img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 24px rgba(41, 128, 185, 0.7);
+    }
+
+    /* === Prediction text === */
+    #prediction-text {
+      margin-top: 25px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2c3e50;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+      text-align: center;
+      width: 100%;
+    }
+
+    #prediction-text.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* === Responsive === */
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+        max-width: 100%; /* make container responsive */
+      }
+      #images-container img {
+        width: 100px;
+        height: 100px;
+      }
+      .dropbox {
+        height: 120px;
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2>Upload X-ray Image</h2>
-    <form method="POST" action="{{ url_for('segment_classify_post') }}" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="{{ user_id }}">
-        <label>Select X-ray Image:</label><br>
-        <input type="file" name="file" accept="image/*" required><br>
-        <button type="submit">Next</button>
+
+  <div class="container">
+    <h2>X-ray Image Analysis</h2>
+
+    <form id="xray-form" method="POST" action="{{ url_for('segment_classify_post') }}" enctype="multipart/form-data">
+      <input type="hidden" name="id" value="{{ user_id }}">
+
+      <label for="file-input">Select X-ray Image:</label>
+      
+      <!-- Dropbox area -->
+      <div class="dropbox" id="dropbox">
+        Drag & drop image here or click to browse
+      </div>
+      
+      <input type="file" id="file-input" name="file" accept="image/*" required />
+
+      <div class="buttons">
+        <button type="button" id="analyze-btn" disabled>Analyze</button>
+        <button type="button" id="next-btn" disabled>Next</button>
+      </div>
     </form>
+
+    <div id="images-container"></div>
+    <div id="prediction-text"></div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const imagesContainer = document.getElementById('images-container');
+    const predictionText = document.getElementById('prediction-text');
+    const form = document.getElementById('xray-form');
+    const dropbox = document.getElementById('dropbox');
+
+    // Open file dialog when clicking dropbox
+    dropbox.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // Handle file input change
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) {
+        analyzeBtn.disabled = false;
+        nextBtn.disabled = true;
+        imagesContainer.classList.remove('visible');
+        predictionText.classList.remove('visible');
+        imagesContainer.innerHTML = '';
+        predictionText.textContent = '';
+      }
+    });
+
+    // Drag & Drop events
+    dropbox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropbox.classList.add('hover');
+    });
+
+    dropbox.addEventListener('dragleave', () => {
+      dropbox.classList.remove('hover');
+    });
+
+    dropbox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropbox.classList.remove('hover');
+
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        fileInput.files = files;  // set files to input
+        // Trigger change event manually
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+      }
+    });
+
+    analyzeBtn.addEventListener('click', () => {
+      if (!fileInput.files.length) return;
+
+      analyzeBtn.disabled = true;
+      nextBtn.disabled = true;
+      predictionText.textContent = "Analyzing...";
+      predictionText.classList.remove('visible');
+      imagesContainer.classList.remove('visible');
+      imagesContainer.innerHTML = '';
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Server error');
+        return response.json();
+      })
+      .then(data => {
+        const keys = ['input_image', 'pred_mask', 'multiply_image', 'overlay'];
+        imagesContainer.innerHTML = '';
+
+        keys.forEach(key => {
+          const base64String = data[key];
+          const img = document.createElement('img');
+          img.src = base64String; // base64String already includes the data URI prefix
+          img.alt = key;
+          imagesContainer.appendChild(img);
+        });
+
+        imagesContainer.classList.add('visible');
+
+        predictionText.textContent = "Prediction: " + data.pulmonary_prediction;
+        predictionText.classList.add('visible');
+        nextBtn.disabled = false;
+      })
+      .catch(err => {
+        alert('Error analyzing the image: ' + err.message);
+      })
+      .finally(() => {
+        analyzeBtn.disabled = false;
+      });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      const userId = form.querySelector('input[name="id"]').value;
+      window.location.href = `/upload_prescriptions?user_id=${encodeURIComponent(userId)}`;
+    });
+  </script>
+
 </body>
 </html>

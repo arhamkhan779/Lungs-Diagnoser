@@ -7,7 +7,6 @@ model_path = r"models\classification_model.keras"
 def Load_Model(model_path):
      model = keras.models.load_model(model_path)
      return model 
-
 print(f"Loading Classification Model")
 model = Load_Model(model_path)
 

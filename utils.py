@@ -1,5 +1,5 @@
 from werkzeug.utils import secure_filename
-from prescription_parser import PrescriptionParser
+from prescription_parser_module import PrescriptionParser
 from cancer_diagnoser import predict_lung_disease
 from classification_module import classify_disease
 from segmentation_module import mask_overlay_original

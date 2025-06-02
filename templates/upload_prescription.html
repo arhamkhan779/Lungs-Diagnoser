@@ -1,15 +1,230 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Upload Prescriptions</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload Prescriptions</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #acb6e5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
+    .container {
+      background-color: white;
+      padding: 2rem 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-in-out;
+      max-width: 900px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 0;
+      animation: slideInDown 0.8s ease-in-out;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    /* Drag & drop box */
+    #drop-area {
+      border: 3px dashed #2196f3;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      color: #555;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      background: #f9faff;
+      user-select: none;
+    }
+    #drop-area.highlight {
+      background-color: #e3f2fd;
+      border-color: #1e88e5;
+    }
+    #drop-area p {
+      margin: 0;
+      font-weight: 600;
+    }
+    #files {
+      display: none;
+    }
+
+    form > div.button-group {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+      gap: 1rem;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: white;
+      transition: background-color 0.3s ease;
+      min-width: 120px;
+      box-shadow: 0 4px 8px rgb(0 0 0 / 0.2);
+    }
+    button[type="submit"] {
+      background-color: #4caf50;
+    }
+    button[type="submit"]:hover {
+      background-color: #388e3c;
+    }
+    button#nextBtn {
+      background-color: #2196f3;
+    }
+    button#nextBtn:hover {
+      background-color: #1565c0;
+    }
+    button:disabled {
+      background-color: #9e9e9e !important;
+      cursor: not-allowed;
+    }
+    #extracted-text {
+      margin-top: 2rem;
+      background: #f1f1f1;
+      border-radius: 10px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      animation: slideInUp 1s ease;
+      color: #333;
+      box-shadow: inset 0 0 10px #ccc;
+    }
+    #extracted-text h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: #444;
+      font-weight: 700;
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 0.3rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInDown {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes slideInUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
     <h2>Upload Prescription Images</h2>
-    <form method="POST" action="{{ url_for('upload_prescriptions_post') }}" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="{{ user_id }}">
-        <label>Select Prescription Images:</label><br>
-        <input type="file" name="files" accept="image/*" multiple required><br>
-        <button type="submit">Submit</button>
-    </form>
+    <!-- Inside your existing HTML file, replace <form> and <script> -->
+<form id="prescriptionForm" enctype="multipart/form-data">
+  <input type="hidden" name="id" value="{{ user_id }}" />
+
+  <label for="files">Select or Drag & Drop Prescription Images:</label>
+
+  <div id="drop-area">
+    <p>Drag & drop your images here, or click to browse</p>
+    <input type="file" id="files" name="files" accept="image/*" multiple required />
+  </div>
+
+  <div class="button-group">
+    <button type="button" id="analyzeBtn" disabled>Analyze</button>
+    <button type="button" id="nextBtn" disabled>Next</button>
+  </div>
+</form>
+
+<div id="extracted-text" style="display:none;">
+  <h3>Extracted Prescription Text:</h3>
+  <div id="textContent"></div>
+</div>
+
+<script>
+  const dropArea = document.getElementById('drop-area');
+  const fileInput = document.getElementById('files');
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const form = document.getElementById('prescriptionForm');
+  const extractedDiv = document.getElementById('extracted-text');
+  const textContent = document.getElementById('textContent');
+
+  // Enable Analyze when files selected
+  fileInput.addEventListener('change', () => {
+    analyzeBtn.disabled = fileInput.files.length === 0;
+  });
+
+  // Drag-drop logic
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+    dropArea.addEventListener(event, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  ['dragenter', 'dragover'].forEach(e =>
+    dropArea.addEventListener(e, () => dropArea.classList.add('highlight'), false)
+  );
+  ['dragleave', 'drop'].forEach(e =>
+    dropArea.addEventListener(e, () => dropArea.classList.remove('highlight'), false)
+  );
+
+  dropArea.addEventListener('click', () => fileInput.click());
+
+  dropArea.addEventListener('drop', (e) => {
+    fileInput.files = e.dataTransfer.files;
+    analyzeBtn.disabled = fileInput.files.length === 0;
+  });
+
+  analyzeBtn.addEventListener('click', async () => {
+    const formData = new FormData();
+    const userId = document.querySelector('input[name="id"]').value;
+    formData.append('id', userId);
+
+    for (let file of fileInput.files) {
+      formData.append('files', file);
+    }
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Analyzing...';
+
+    const res = await fetch('/upload_prescriptions', {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    textContent.innerHTML = data.extracted_text;
+    extractedDiv.style.display = 'block';
+    nextBtn.disabled = false;
+    analyzeBtn.textContent = 'Analyze';
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const userId = document.querySelector('input[name="id"]').value;
+    window.location.href = `/report_generation?user_id=${encodeURIComponent(userId)}`;
+  });
+</script>
+
 </body>
 </html>
