@@ -5,8 +5,6 @@ from classification_module import classify_disease
 from segmentation_module import mask_overlay_original
 
 
-
-
 def extract_prescription_text(image_paths):
     """
     Takes a list of image file paths and returns extracted text from all prescriptions.

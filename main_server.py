@@ -13,33 +13,64 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 @app.route('/')
 def home():
-    error = request.args.get('error')
-    return render_template('home.html', error=error)
+    try:
+        error = request.args.get('error')
+        return render_template('home.html', error=error)
+    except Exception as e:
+        raise e
+    
+@app.route('/predict_cancer')
+def predict_cancer():
+    try:
+        user_id = request.args.get("user_id")  # 🔥 THIS is how you get it
+        return render_template('predict_cancer.html', user_id=user_id)
+    except Exception as e:
+        raise e
+    
+@app.route('/segment_classify')
+def segment_classify():
+    try:
+        user_id = request.args.get("user_id")
+        return render_template('segment_classify.html', user_id=user_id)
+    except Exception as e:
+        raise e
+
+@app.route('/upload_prescriptions')
+def upload_prescriptions():
+    try:
+        user_id = request.args.get("user_id")
+        return render_template('upload_prescription.html', user_id=user_id)
+    except Exception as e:
+        raise e
+
+@app.route('/report_generation')
+def report_generation():
+    try:
+        user_id = request.args.get("user_id")
+        return render_template('report_generation.html', user_id=user_id)
+    except Exception as e:
+        raise e
 
 @app.route('/register', methods=['POST'])
 def register():
-    name = request.form['name'].strip()
-    email = request.form['email'].strip()
-    user_id = request.form['id'].strip()
+    try:
+        name = request.form['name'].strip()
+        email = request.form['email'].strip()
+        user_id = request.form['id'].strip()
 
-    if user_id in os.listdir("data"):
-        # Redirect back to home with an error
-        return redirect(url_for('home', error='User ID already exists'))
+        if user_id in os.listdir("data"):
+            # Redirect back to home with an error
+            return redirect(url_for('home', error='User ID already exists'))
 
-    user_folder = os.path.join(app.config['UPLOAD_FOLDER'], user_id)
-    os.makedirs(user_folder, exist_ok=True)
-    user_info_path = os.path.join(user_folder, 'user_info.xlsx')
-    df = pd.DataFrame([{'Name': name, 'Email': email, 'ID': user_id}])
-    df.to_excel(user_info_path, index=False)
+        user_folder = os.path.join(app.config['UPLOAD_FOLDER'], user_id)
+        os.makedirs(user_folder, exist_ok=True)
+        user_info_path = os.path.join(user_folder, 'user_info.xlsx')
+        df = pd.DataFrame([{'Name': name, 'Email': email, 'ID': user_id}])
+        df.to_excel(user_info_path, index=False)
 
-    return redirect(url_for('predict_cancer', user_id=user_id))
-
-
-
-@app.route('/predict_cancer')
-def predict_cancer():
-    user_id = request.args.get("user_id")  # 🔥 THIS is how you get it
-    return render_template('predict_cancer.html', user_id=user_id)
+        return redirect(url_for('predict_cancer', user_id=user_id))
+    except Exception as e:
+        raise e
 
 @app.route('/cancer_prediction', methods=['POST'])
 def cancer_prediction():
@@ -115,12 +146,6 @@ def cancer_prediction():
     else:
         return redirect(url_for('segment_classify', user_id=user_id))
     
-@app.route('/segment_classify')
-def segment_classify():
-    user_id = request.args.get("user_id")
-    print("GET /segment_classify with user_id:", user_id)
-    return render_template('segment_classify.html', user_id=user_id)
-
 @app.route('/segment_classify', methods=['POST'])
 def segment_classify_post():
     user_id = request.form["id"].strip()
@@ -185,18 +210,6 @@ def segment_classify_post():
         })
     else:
         return redirect(url_for('upload_prescriptions', user_id=user_id))
-
-@app.route('/upload_prescriptions')
-def upload_prescriptions():
-    user_id = request.args.get("user_id")
-    return render_template('upload_prescription.html', user_id=user_id)
-
-
-@app.route('/report_generation')
-def report_generation():
-    user_id = request.args.get("user_id")
-    return render_template('report_generation.html', user_id=user_id)
-    
 
 @app.route('/upload_prescriptions', methods=['GET', 'POST'])
 def upload_prescriptions_post():
