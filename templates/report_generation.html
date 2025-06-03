@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Generate Reports</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem 1rem;
+        }
+        #main-heading {
+            background: rgba(255, 255, 255, 0.85);  /* translucent white */
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px auto;  /* center horizontally with margin below */
+            user-select: none;
+            }
+
+            #main-heading h1 {
+            font-weight: 800;
+            font-size: 2.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            color: #34495e;
+            }
+
+            #main-heading .subtitle {
+            margin-top: 8px;
+            font-weight: 500;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            letter-spacing: 0.05em;
+            }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 28px;
+            transition: none; /* prevent style changes */
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+        .action-buttons button {
+            padding: 14px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: #2980b9;
+            color: white;
+            box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+            transition: background-color 0.3s ease;
+        }
+        .action-buttons button:hover {
+            background-color: #1c5980;
+        }
+
+        /* REPORT SCREEN */
+        .report-screen {
+            display: none;
+            flex-direction: column;
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 900px;
+            height: 600px; /* fixed height */
+            box-sizing: border-box;
+        }
+
+        /* NAV BUTTONS AT BOTTOM */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: auto; /* push buttons to bottom */
+            padding-top: 16px;
+            border-top: 1px solid #ddd;
+        }
+        .nav-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 8px;
+            max-width: 150px;
+        }
+        #back-btn, #back-btn-report, #back-btn-exercise {
+            background-color: #e74c3c;
+            color: white;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+        #back-btn:hover, #back-btn-report:hover, #back-btn-exercise:hover {
+            background-color: #c0392b;
+        }
+        #download-btn, #download-report-btn, #download-exercise-btn {
+            background-color: #27ae60;
+            color: white;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        }
+        #download-btn:hover, #download-report-btn:hover, #download-exercise-btn:hover {
+            background-color: #1e8449;
+        }
+
+        /* CONTENT AREA FILLS REMAINING SPACE */
+        .report-content {
+            flex-grow: 1;
+            width: 100%;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0 8px;
+            box-sizing: border-box;
+            white-space: normal;
+            line-height: 1.5;
+            font-size: 16px;
+            color: #333;
+        }
+        /* Remove extra margin in paragraphs */
+        .report-content p {
+            margin: 0 0 1em 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-heading" class="heading-container">
+    <h1>Report Generation</h1>
+    <p class="subtitle">Generate Diet Plan, Exercise Plan, and Medical Reports</p>
+    </div>
+
+    <div class="action-buttons" id="main-ui">
+        <button id="generate-diet">Generate Diet Plan</button>
+        <button id="generate-exercise">Generate Exercise Plan</button>
+        <button id="generate-report">Generate Medical Report</button>
+    </div>
+
+    <!-- Diet Plan Screen -->
+    <div id="diet-plan-screen" class="report-screen">
+        <div id="diet-plan-content" class="report-content"></div>
+        <div class="nav-buttons">
+            <button id="back-btn">Back</button>
+            <button id="download-btn">Download as PDF</button>
+        </div>
+    </div>
+
+    <!-- Exercise Plan Screen -->
+    <div id="exercise-plan-screen" class="report-screen">
+        <div id="exercise-plan-content" class="report-content"></div>
+        <div class="nav-buttons">
+            <button id="back-btn-exercise">Back</button>
+            <button id="download-exercise-btn">Download Exercise Plan</button>
+        </div>
+    </div>
+
+    <!-- Medical Report Screen -->
+    <div id="medical-report-screen" class="report-screen">
+        <div id="medical-report-content" class="report-content"></div>
+        <div class="nav-buttons">
+            <button id="back-btn-report">Back</button>
+            <button id="download-report-btn">Download Report</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        const user_id = "{{ user_id }}";
+
+        const mainHeading = document.getElementById("main-heading");
+        const mainUI = document.getElementById("main-ui");
+        const generateDietBtn = document.getElementById("generate-diet");
+        const generateExerciseBtn = document.getElementById("generate-exercise");
+        const generateReportBtn = document.getElementById("generate-report");
+
+        let dietContent = "";
+        let exerciseContent = "";
+        let reportContent = "";
+
+        // Clean HTML content to remove empty paragraphs and excessive spacing
+        function cleanHtmlContent(html) {
+            return html
+                .replace(/(<p>(&nbsp;|\s)*<\/p>)+/g, '')  // remove empty paragraphs
+                .replace(/\n\s*\n/g, '\n') // remove multiple newlines
+                .trim();
+        }
+
+        function showMainUI() {
+            mainUI.style.display = "flex";
+            document.getElementById("diet-plan-screen").style.display = "none";
+            document.getElementById("exercise-plan-screen").style.display = "none";
+            document.getElementById("medical-report-screen").style.display = "none";
+
+            // Reset heading styles (in case changed)
+            mainHeading.style.fontSize = "28px";
+            mainHeading.style.fontWeight = "700";
+            mainHeading.style.color = "#2c3e50";
+        }
+
+        // Diet Plan button logic
+        generateDietBtn.addEventListener("click", async function () {
+            if (generateDietBtn.innerText === "View Diet Plan") {
+                mainUI.style.display = "none";
+                document.getElementById("diet-plan-screen").style.display = "flex";
+                document.getElementById("diet-plan-content").innerHTML = cleanHtmlContent(dietContent);
+                return;
+            }
+
+            generateDietBtn.disabled = true;
+            generateDietBtn.innerText = "Generating...";
+
+            try {
+                const response = await fetch('/diet_plan_generate', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user_id })
+                });
+
+                const data = await response.json();
+                if (data.response) {
+                    dietContent = data.response;
+                    generateDietBtn.innerText = "View Diet Plan";
+                } else {
+                    alert("Failed to generate diet plan.");
+                    generateDietBtn.innerText = "Generate Diet Plan";
+                }
+            } catch (error) {
+                alert("An error occurred while generating the diet plan.");
+                console.error(error);
+                generateDietBtn.innerText = "Generate Diet Plan";
+            }
+            generateDietBtn.disabled = false;
+        });
+
+        // Exercise Plan button logic
+        generateExerciseBtn.addEventListener("click", async function () {
+            if (generateExerciseBtn.innerText === "View Exercise Plan") {
+                mainUI.style.display = "none";
+                document.getElementById("exercise-plan-screen").style.display = "flex";
+                document.getElementById("exercise-plan-content").innerHTML = cleanHtmlContent(exerciseContent);
+                return;
+            }
+
+            generateExerciseBtn.disabled = true;
+            generateExerciseBtn.innerText = "Generating...";
+
+            try {
+                const response = await fetch('/excercise_report_generate', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user_id })
+                });
+
+                const data = await response.json();
+                if (data.response) {
+                    exerciseContent = data.response;
+                    generateExerciseBtn.innerText = "View Exercise Plan";
+                } else {
+                    alert("Failed to generate exercise plan.");
+                    generateExerciseBtn.innerText = "Generate Exercise Plan";
+                }
+            } catch (error) {
+                alert("An error occurred while generating the exercise plan.");
+                console.error(error);
+                generateExerciseBtn.innerText = "Generate Exercise Plan";
+            }
+            generateExerciseBtn.disabled = false;
+        });
+
+        // Medical Report button logic
+        generateReportBtn.addEventListener("click", async function () {
+            if (generateReportBtn.innerText === "View Report") {
+                mainUI.style.display = "none";
+                document.getElementById("medical-report-screen").style.display = "flex";
+                document.getElementById("medical-report-content").innerHTML = cleanHtmlContent(reportContent);
+                return;
+            }
+
+            generateReportBtn.disabled = true;
+            generateReportBtn.innerText = "Generating...";
+
+            try {
+                const response = await fetch('/medical_report_generate', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: user_id })
+                });
+
+                const data = await response.json();
+                if (data.response) {
+                    reportContent = data.response;
+                    generateReportBtn.innerText = "View Report";
+                } else {
+                    alert("Failed to generate medical report.");
+                    generateReportBtn.innerText = "Generate Medical Report";
+                }
+            } catch (error) {
+                alert("An error occurred while generating the medical report.");
+                console.error(error);
+                generateReportBtn.innerText = "Generate Medical Report";
+            }
+            generateReportBtn.disabled = false;
+        });
+
+        // Back buttons to return to main UI
+        document.getElementById("back-btn").addEventListener("click", showMainUI);
+        document.getElementById("back-btn-exercise").addEventListener("click", showMainUI);
+        document.getElementById("back-btn-report").addEventListener("click", showMainUI);
+
+        // Download Diet Plan PDF
+        document.getElementById("download-btn").addEventListener("click", function () {
+            const element = document.createElement("div");
+            element.innerHTML = cleanHtmlContent(dietContent);
+            document.body.appendChild(element);
+            html2pdf().from(element).set({
+                margin: 0.5,
+                filename: 'diet_plan.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save().then(() => document.body.removeChild(element));
+        });
+
+        // Download Exercise Plan PDF
+        document.getElementById("download-exercise-btn").addEventListener("click", function () {
+            const element = document.createElement("div");
+            element.innerHTML = cleanHtmlContent(exerciseContent);
+            document.body.appendChild(element);
+            html2pdf().from(element).set({
+                margin: 0.5,
+                filename: 'exercise_plan.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save().then(() => document.body.removeChild(element));
+        });
+
+        // Download Medical Report PDF
+        document.getElementById("download-report-btn").addEventListener("click", function () {
+            const element = document.createElement("div");
+            element.innerHTML = cleanHtmlContent(reportContent);
+            document.body.appendChild(element);
+            html2pdf().from(element).set({
+                margin: 0.5,
+                filename: 'medical_report.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            }).save().then(() => document.body.removeChild(element));
+        });
+
+        // Initially show main UI
+        showMainUI();
+    </script>
+</body>
+</html>

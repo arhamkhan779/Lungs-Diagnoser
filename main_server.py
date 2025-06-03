@@ -7,11 +7,16 @@ from PIL import Image
 import numpy as np
 import base64
 from io import BytesIO
+from report_generation import DietPlanGenerator
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'data'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-@app.route('/')
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route('/register')
 def home():
     try:
         error = request.args.get('error')
@@ -51,6 +56,48 @@ def report_generation():
     except Exception as e:
         raise e
 
+@app.route("/diet_plan_generate", methods=["POST"])
+def diet_plan_generator():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id") if data else None
+        if not user_id:
+            return jsonify({"error": "user_id is required"}), 400
+
+        obj = DietPlanGenerator(id=user_id)
+        plan = obj.generate_html_diet_plan()
+        return jsonify({"response": plan})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/medical_report_generate", methods=["POST"])
+def medical_report_generator():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id") if data else None
+        if not user_id:
+            return jsonify({"error": "user_id is required"}), 400
+
+        obj = DietPlanGenerator(id=user_id)
+        plan = obj.generate_html_medical_report()
+        return jsonify({"response": plan})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/excercise_report_generate", methods=["POST"])
+def excercise_report_generator():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id") if data else None
+        if not user_id:
+            return jsonify({"error": "user_id is required"}), 400
+
+        obj = DietPlanGenerator(id=user_id)
+        plan = obj.generate_html_exercise_plan()
+        return jsonify({"response": plan})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/register', methods=['POST'])
 def register():
     try:
@@ -65,7 +112,7 @@ def register():
         user_folder = os.path.join(app.config['UPLOAD_FOLDER'], user_id)
         os.makedirs(user_folder, exist_ok=True)
         user_info_path = os.path.join(user_folder, 'user_info.xlsx')
-        df = pd.DataFrame([{'Name': name, 'Email': email, 'ID': user_id}])
+        df = pd.DataFrame([{'Name': name, 'Email': email, 'ID': str(user_id)}])
         df.to_excel(user_info_path, index=False)
 
         return redirect(url_for('predict_cancer', user_id=user_id))

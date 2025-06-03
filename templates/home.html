@@ -153,7 +153,8 @@
       <div class="form-group">
         <label for="id">ID:</label>
         <input type="text" id="id" name="id" required autocomplete="off"
-               pattern="[A-Za-z0-9]+" title="User ID must be alphanumeric" />
+        pattern="[A-Za-z][A-Za-z0-9]*|[1-9][A-Za-z0-9]*" 
+        title="User ID must be alphanumeric and cannot start with 0" />
       </div>
 
       <button type="submit">Next</button>
