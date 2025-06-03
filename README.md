@@ -2,7 +2,8 @@
 
 A **Production-Level Multi-Model Diagnostic Agent** for lung disease detection. Built using Flask, TensorFlow, Scikit-learn, Langchain, and Gemini 2.0 Flash, this web application enables users to register, diagnose cancer probability, analyze chest X-rays, parse prescriptions, and generate reports — all in one platform.
 
-![App Screenshot]([https://via.placeholder.com/800x400.png?text=Lungs+Diagnoser+Dashboard](https://github.com/arhamkhan779/Lungs-Diagnoser/blob/main/thumbnail.png)) <!-- You can add your own screenshot here -->
+![App Screenshot](https://github.com/arhamkhan779/Lungs-Diagnoser/blob/main/thumbnail.png?raw=true)
+
 
 ---
 
