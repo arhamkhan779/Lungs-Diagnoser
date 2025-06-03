@@ -50,8 +50,10 @@ class DietPlanGenerator:
             else:
                 if int(df[column].values[0]) == 0:
                     data[column] = "No"
-                else:
+                elif int(df[column].values[0]) == 1:
                     data[column] = "Yes"
+                else:
+                    data[column] = int(df[column].values[0])
         return data
     
     def get_segment_classify_results(self):
